@@ -3,8 +3,9 @@
 #include "Data.h"
 typedef struct STnode* link;
 
-struct STnode {Data data; link l,r; int N};
+struct STnode {Data data; link l,r; int N;};
 static link head, z;
+
 link NEW(Data data, link l, link r, int N) {
     link x=malloc(sizeof *x);
     x->data=data; x->l=l; x->r=r; x->N=N;
@@ -22,7 +23,7 @@ link rotL(link h){
 }
 
 void STinit() {//初期化関数
-    head=(z=NEW(Nulldata, 0, 0, 0));
+    head=(z=NEW(NULLdata, 0, 0, 0));
 }
 
 int STcount(void) {
@@ -38,6 +39,10 @@ Data searchR(link h, Key v) {//探索関数
     } else {
         return searchR(h->r,v);
     }
+}
+
+Data STsearch(Key v) {
+    return searchR(head, v);
 }
 
 link insertT(link h, Data data) {//挿入関数

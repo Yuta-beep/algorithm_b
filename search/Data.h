@@ -1,15 +1,14 @@
 typedef int Key;
-typedef struce {
-    Key key; char information[10];
-} Data;
+typedef struct {Key key; char information[10];} Data;
+#define key(A) (A.key)
 
 #define less(A,B) (A<B)
-#define exch(A,B) {data t=A; A=B; B=t;}
-#define compexch(A,B) if (less(B,A)) exch(A,B)
-#difine eq(A,B) (A==B)
+#define exch(A,B){Data t=A;A=B;}
+#define compexch(A,B) if(less(B,A)) exch(A,B)
+#define eq(A,B)(A==B)
 
-Data Nulldata;
+extern Data NULLdata;
 
 Key DATArand(void);
 int DATAscan(Key *);
-void DATAshow(Data x);
+void DATAshow(Data);
