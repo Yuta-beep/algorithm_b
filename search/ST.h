@@ -1,7 +1,10 @@
 void STinit(int);
 int STcount(void);
-void STinsert(Data);
-Data STsearch(Key);
-void STdelete(Data);
-Data STselect(int);
-void STsort(void (*visit)(Data));
+void STinsert(Item);
+Item STsearch(Key);
+void STdelete(Item);
+Item STselect(int);
+void STsort(void (*visit)(Item));
+void STshow(Item);
+void STshowAll(void);
+int STcountNode(Item);

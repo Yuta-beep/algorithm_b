@@ -1,72 +1,86 @@
 #include<stdio.h>
-#include<stdlib.h>
-#include "Data.h"
+#include <stdlib.h>
+#include "Item.h"
 typedef struct STnode* link;
-
-struct STnode {Data data; link l,r; int N;};
+struct STnode { Item item; link l, r; int N; };
 static link head, z;
 
-link NEW(Data data, link l, link r, int N) {
-    link x=malloc(sizeof *x);
-    x->data=data; x->l=l; x->r=r; x->N=N;
-    return x;
+link NEW(Item item, link l, link r, int N)
+
+{ link x = malloc(sizeof *x); 
+  x->item = item; x->l = l; x->r = r; x->N = N;
+  return x;
+}
+void STinit()
+{ head = (z = NEW(NULLitem, 0, 0, 0)); }
+
+int STcount(void) { return head->N; }
+
+Item searchR(link h, Key v)
+{ Key t = key(h->item);
+  if (h == z) return NULLitem;
+  if eq(v, t) return h->item;
+  if less(v, t) return searchR(h->l, v);
+  else return searchR(h->r, v);
 }
 
-link rotR(link h){
-    link x=h->l; h->l=x->r; x->r=h;
-    return x;
+Item STsearch(Key v) 
+{ return searchR(head, v); } 
+
+link rotR(link h)
+{ link x = h->l; h->l = x->r; x->r = h; 
+  return x; }
+
+link rotL(link h)
+{ link x = h->r; h->r = x->l; x->l = h; 
+  return x; }
+
+link insertT(link h, Item item)
+{ Key v = key(item);
+  if (h == z) return NEW(item, z, z, 1); 
+  if (less(v, key(h->item))) 
+    { h->l = insertT(h->l, item); h = rotR(h); }
+  else
+    { h->r = insertT(h->r, item); h = rotL(h); }
+  return h;
 }
 
-link rotL(link h){
-    link x=h->r; h->r=x->l; x->l=h;
-    return x;
+void STinsert(Item item)
+{ head = insertT(head, item); }
+
+void sortR(link h, void (*visit)(Item))
+{ 
+  if (h == z) return;
+  sortR(h->l, visit);
+  visit(h->item); 
+  sortR(h->r, visit);
 }
 
-void STinit() {//初期化関数
-    head=(z=NEW(NULLdata, 0, 0, 0));
+int STcountNode(link h){
+  int ct=1; //自身のノードは含めるので1からカウント
+  if(h==z) return 0;
+  if(h->r!=NULL){
+    ct+=STcountNode(h->r);
+  }
+  if(h->l!=NULL){
+    ct+=STcountNode(h->l);
+  }
+  return ct;
 }
 
-int STcount(void) {
-    return head->N;
+void STsort(void (*visit)(Item))
+{ sortR(head, visit); } 
+
+void STshow(link h, int l){
+  int i=0;
+  if(h != NULL){
+    STshow(h->r, l+1);
+    for(i=0; i<l; i++) printf("\t");
+    printf("(%d,%d)\n",key(h->item), STcountNode(h));
+    STshow(h->l, l+1);
+  }
 }
 
-Data searchR(link h, Key v) {//探索関数
-    Key t=key(h->data);
-    if(h==z) return NULLdata;
-    if eq(v,t) return h->data;
-    if less(v,t){
-        return searchR(h->l,v);
-    } else {
-        return searchR(h->r,v);
-    }
-}
+void STshowAll(){ STshow(head, 0); }
 
-Data STsearch(Key v) {
-    return searchR(head, v);
-}
 
-link insertT(link h, Data data) {//挿入関数
-    Key v=key(data);
-    if(h==z) return NEW(data, z,z,1);
-    if(less(v,key(h->data))) {
-        h->l=insertT(h->l,data); h=rotR(h);
-    } else {
-        h->r=insertT(h->r,data); h=rotL(h);
-    }
-    return h;
-}
-
-void STinsert(Data data) {
-    head=insertT(head, data);
-}
-
-void sortR(link h, void (*visit)(Data)) {
-    if(h==z) return;
-    sortR(h->l, visit);
-    visit(h->data);
-    sortR(h->r,visit);
-}
-
-void STsort(void (*visit)(Data)) {
-    sortR(head, visit);
-}
