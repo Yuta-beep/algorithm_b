@@ -83,4 +83,75 @@ void STshow(link h, int l){
 
 void STshowAll(){ STshow(head, 0); }
 
+// スプレイ木のスプレー操作：アクセスしたノードを根まで移動
+link splay (link h, Item item) {
+	Key v = key (item);
+	
+	// 空の木の場合、新しいノードを作成
+	if (h == z) return NEW (item, z, z, 1);
+	
+	// 左部分木に挿入する場合
+	if (less (v, key (h->item))) {
+		// 左の子が空の場合、新しいノードを挿入
+    	if (h->l == z) return NEW (item, z, h, h->N + 1);
+    	
+    	// 左の左部分木に再帰的にスプレイ（zig-zig操作）
+    	if (less (v, key (h->l->item))) {
+	  		h->l->l = splay (h->l->l, item);
+	  		h = rotR (h);  // 右回転
+		} else {
+			// 左の右部分木に再帰的にスプレイ（zig-zag操作）
+	  		h->l->r = splay (h->l->r, item);
+	  		h->l = rotL (h->l);  // 左回転
+		}
+    	return rotR (h);  // 最終的な右回転
+	} else {
+		// 右部分木に挿入する場合
+		// 右の子が空の場合、新しいノードを挿入
+    	if (h->r == z) return NEW (item, h, z, h->N + 1);
+    	
+    	// 右の右部分木に再帰的にスプレイ（zig-zig操作）
+    	if (less (key (h->r->item), v)) {
+			h->r->r = splay (h->r->r, item);
+	  		h = rotL (h);  // 左回転
+		} else {
+			// 右の左部分木に再帰的にスプレイ（zig-zag操作）
+	  		h->r->l = splay (h->r->l, item);
+	  		h->r = rotR (h->r);  // 右回転
+		}
+		return rotL (h);  // 最終的な左回転
+    }
+}
+
+// スプレイ木への挿入：スプレイ操作でアクセスしたノードを根に移動
+void STsplayInsert (Item item) {
+	head = splay (head, item);
+}
+
+// ランダム化二分探索木への挿入：確率的に根に挿入
+link insertR (link h, Item item) {
+  Key v = key (item), t = key (h->item);
+
+  // 空の木の場合、新しいノードを作成
+  if (h == z) return NEW (item, z, z, 1);
+  
+  // 確率 1/(N+1) で根に挿入（ランダム化の核心）
+  if (rand () < RAND_MAX / (h->N + 1)) return insertT (h, item);
+  
+  // 通常の二分探索木挿入：値の大小に応じて左右に再帰
+  if (less(v, t)) h->l = insertR (h->l, item);
+  else h->r = insertR (h->r, item);
+  
+  // ノード数を更新
+  (h->N)++;
+  return h;
+}
+
+// ランダム化二分探索木への挿入のエントリーポイント
+void STinsertR (Item item) {
+  head = insertR (head, item);
+}
+
+
+
 

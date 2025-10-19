@@ -14,8 +14,9 @@ int main(int argc, char *argv[])
       else if (ITEMscan(&v) == EOF) break;
       item = STsearch(v); if (item.key != NULLitem.key) continue;
       key(item) = v;
-      STinsert(item); M++;
+      STsplayInsert(item); M++;
     }
+    
   STsort(ITEMshow); printf("\n");
   printf("%d keys ", N);
   printf("%d distinct keys\n", STcount());

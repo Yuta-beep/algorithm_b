@@ -8,3 +8,5 @@ void STsort(void (*visit)(Item));
 void STshow(Item);
 void STshowAll(void);
 int STcountNode(Item);
+void STsplayInsert(Item);
+void STinsertR(Item);
